@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+target/
+.pnpm-store/
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+
+# Ambiente e segredos
+.env
+.env.local
+.env.*.local
+
+# Dados de efemérides (binários grandes)
+packages/calculator/ephemeris_data/*.se1
+
+# Gerados automaticamente
+packages/calculator/src/generated/
+src-tauri/gen/
+
+# Cache e temporários
+.cache/
+*.log
+*.tmp
+
+# Sistema
+.DS_Store
+Thumbs.db
