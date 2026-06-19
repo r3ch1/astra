@@ -1,0 +1,24 @@
+{
+  "name": "astra",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plataforma de Mapas Astrológicos com IA",
+  "license": "AGPL-3.0-only",
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=22.13.0",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "build": "pnpm --recursive --filter \"./apps/*\" build",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "typecheck": "pnpm --recursive typecheck",
+    "calc:build": "cargo build --release --manifest-path packages/calculator/Cargo.toml",
+    "calc:test": "cargo test --manifest-path packages/calculator/Cargo.toml"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

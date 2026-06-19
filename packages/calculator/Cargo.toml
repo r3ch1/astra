@@ -1,0 +1,26 @@
+[package]
+name = "astra-calculator"
+version = "0.0.0"
+edition = "2021"
+description = "Motor de cálculo astrológico do Astra — Swiss Ephemeris via FFI"
+license = "AGPL-3.0-only"
+publish = false
+
+[lib]
+name = "astra_calculator"
+path = "src/lib.rs"
+
+[[bin]]
+name = "astra-calc"
+path = "src/main.rs"
+
+[dependencies]
+libswe-sys = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10"
+thiserror = "2"
+
+[dev-dependencies]
+approx = "0.5"

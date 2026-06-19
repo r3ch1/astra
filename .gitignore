@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+target/
+
+# Tauri
+apps/desktop/src-tauri/target/
+
+# Swiss Ephemeris data files (large; not committed)
+packages/calculator/ephemeris_data/*.se1
+
+# Arquivos gerados — NUNCA editar manualmente
+packages/calculator/src/generated/
+
+# Env / secrets — NUNCA commitar
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Coverage / test
+coverage/
