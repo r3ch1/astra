@@ -1,0 +1,8 @@
+node_modules
+pnpm-lock.yaml
+**/dist
+**/.next
+**/out
+**/build
+packages/calculator/target
+packages/calculator/src/generated

@@ -13,12 +13,30 @@
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "build": "pnpm --recursive --filter \"./apps/*\" build",
     "test": "pnpm --recursive test",
-    "lint": "pnpm --recursive lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
     "typecheck": "pnpm --recursive typecheck",
     "calc:build": "cargo build --release --manifest-path packages/calculator/Cargo.toml",
-    "calc:test": "cargo test --manifest-path packages/calculator/Cargo.toml"
+    "calc:test": "cargo test --manifest-path packages/calculator/Cargo.toml",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "apps/api/**/*.ts": "eslint --fix",
+    "apps/web/**/*.{ts,tsx}": "eslint --fix",
+    "packages/**/*.{ts,tsx}": "eslint --fix",
+    "*.{json,md,yml,yaml,css}": "prettier --write"
   },
   "devDependencies": {
-    "typescript": "^5.7.3"
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
   }
 }
