@@ -8,6 +8,8 @@ build/
 .next/
 out/
 target/
+next-env.d.ts
+*.tsbuildinfo
 
 # Tauri
 apps/desktop/src-tauri/target/

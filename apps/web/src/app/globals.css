@@ -1,0 +1,58 @@
+/* Design tokens do Astra (ver docs/astra_design_briefing.md). Modo escuro é o padrão. */
+:root {
+  --deep-violet: #1a0a2e;
+  --midnight-blue: #0d1b4b;
+  --cosmic-purple: #4b2d8a;
+  --celestial-gold: #c9a84c;
+  --moon-silver: #b8c0d4;
+  --off-white: #f0eef8;
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --bg-card: rgba(13, 27, 75, 0.55);
+  --border-subtle: rgba(184, 192, 212, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--off-white);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(75, 45, 138, 0.35), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(13, 27, 75, 0.6), transparent 50%), var(--deep-violet);
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}

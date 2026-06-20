@@ -67,6 +67,8 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       // React 17+/Next: JSX runtime automático, não precisa importar React.
       "react/react-in-jsx-scope": "off",
+      // Usamos TypeScript para tipar props — prop-types é redundante.
+      "react/prop-types": "off",
     },
   },
 );
