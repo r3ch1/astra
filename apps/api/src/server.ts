@@ -5,12 +5,14 @@
 
 import Fastify, { type FastifyInstance } from "fastify";
 import { chartRoutes } from "./routes/chart.js";
+import { interpretationRoutes } from "./routes/interpretation.js";
 
 export function buildServer(): FastifyInstance {
   const app = Fastify({ logger: true });
 
   app.get("/health", async () => ({ status: "ok" }));
   app.register(chartRoutes);
+  app.register(interpretationRoutes);
 
   return app;
 }

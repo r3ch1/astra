@@ -17,6 +17,30 @@ const defaultCalcBin = resolve(
   "packages/calculator/target/release/astra-calc",
 );
 
+/** Configuração da camada de IA (LLM). */
+export interface LlmConfig {
+  /** Provider ativo: "anthropic" | "gemini" | "mock" (futuro: "openrouter"). */
+  provider: string;
+  /** Key do Claude (provider anthropic). */
+  anthropicApiKey: string | undefined;
+  /** Key do Google AI (provider gemini). */
+  geminiApiKey: string | undefined;
+  /** Modelo para interpretação individual de posição (cacheável). */
+  modelInterpretation: string;
+  /** Teto de tokens por interpretação. */
+  maxTokens: number;
+}
+
+const llmProvider = process.env.LLM_PROVIDER ?? "anthropic";
+
+// Default de modelo por provider — evita mandar um ID de Claude para o Gemini
+// (e vice-versa). Sobrescrevível por ASTRA_LLM_MODEL_INTERPRETATION.
+const defaultInterpretationModel: Record<string, string> = {
+  anthropic: "claude-haiku-4-5",
+  gemini: "gemini-2.5-flash",
+  mock: "mock",
+};
+
 export interface Config {
   host: string;
   port: number;
@@ -26,6 +50,11 @@ export interface Config {
   ephePath: string | undefined;
   /** Timeout do subprocesso de cálculo, em ms. */
   calcTimeoutMs: number;
+  /** Diretório onde o cache de interpretações é persistido (arquivos JSON). */
+  cacheDir: string;
+  /** Diretório dos arquivos de prompts (fora do repo público — ver CLAUDE.md). */
+  promptsDir: string;
+  llm: LlmConfig;
 }
 
 export const config: Config = {
@@ -34,4 +63,18 @@ export const config: Config = {
   calcBin: process.env.ASTRA_CALC_BIN ?? defaultCalcBin,
   ephePath: process.env.ASTRA_EPHE_PATH,
   calcTimeoutMs: Number(process.env.ASTRA_CALC_TIMEOUT_MS ?? 10_000),
+  cacheDir:
+    process.env.ASTRA_CACHE_DIR ?? resolve(repoRoot, ".cache/interpretations"),
+  promptsDir:
+    process.env.ASTRA_PROMPTS_DIR ?? resolve(repoRoot, "apps/api/prompts"),
+  llm: {
+    provider: llmProvider,
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+    geminiApiKey: process.env.GEMINI_API_KEY,
+    modelInterpretation:
+      process.env.ASTRA_LLM_MODEL_INTERPRETATION ??
+      defaultInterpretationModel[llmProvider] ??
+      "claude-haiku-4-5",
+    maxTokens: Number(process.env.ASTRA_LLM_MAX_TOKENS ?? 1000),
+  },
 };

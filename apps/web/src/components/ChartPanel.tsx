@@ -1,6 +1,16 @@
-/** Painel lateral com os dados do mapa em texto: planetas, ângulos e aspectos. */
+/**
+ * Painel lateral com os dados do mapa em texto: planetas, ângulos e aspectos.
+ *
+ * Os planetas são clicáveis: ao clicar, busca-se a leitura por IA daquela
+ * posição (planeta em signo + casa) e ela é exibida inline. As leituras já
+ * carregadas ficam em estado local — reabrir não refaz a chamada.
+ */
 
-import type { NatalChart } from "@astra/types";
+"use client";
+
+import { useState } from "react";
+import type { NatalChart, PlanetPosition } from "@astra/types";
+import { fetchInterpretation } from "../lib/api";
 import {
   SIGN_GLYPH,
   SIGN_PT,
@@ -44,7 +54,111 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+interface Reading {
+  loading: boolean;
+  text?: string;
+  error?: string;
+}
+
+function PlanetRow({
+  planet,
+  open,
+  reading,
+  onToggle,
+}: {
+  planet: PlanetPosition;
+  open: boolean;
+  reading: Reading | undefined;
+  onToggle: () => void;
+}) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        style={{
+          ...cell,
+          width: "100%",
+          background: "transparent",
+          border: "none",
+          borderBottom: "1px solid var(--border-subtle)",
+          color: "inherit",
+          cursor: "pointer",
+          textAlign: "left",
+        }}
+      >
+        <span style={glyphStyle}>{glyphFor(planet.body)}</span>
+        <span>{bodyLabel(planet.body)}</span>
+        <span style={{ color: "var(--moon-silver)" }}>
+          {SIGN_GLYPH[planet.sign]} {SIGN_PT[planet.sign]}
+        </span>
+        {planet.retrograde && (
+          <span style={{ color: "#b5476b", fontSize: 12 }} title="Retrógrado">
+            ℞
+          </span>
+        )}
+        <span style={degStyle}>
+          {planet.formatted} · casa {planet.house}
+        </span>
+        <span style={{ color: "var(--celestial-gold)", fontSize: 12, width: 14, textAlign: "center" }}>
+          {open ? "▾" : "▸"}
+        </span>
+      </button>
+
+      {open && (
+        <div
+          style={{
+            padding: "10px 4px 14px",
+            fontSize: 13.5,
+            lineHeight: 1.6,
+            color: "var(--off-white)",
+            whiteSpace: "pre-wrap",
+          }}
+        >
+          {reading?.loading && (
+            <span style={{ color: "var(--moon-silver)" }}>Lendo o céu…</span>
+          )}
+          {reading?.error && (
+            <span style={{ color: "#e89ab0" }}>{reading.error}</span>
+          )}
+          {reading?.text}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ChartPanel({ chart }: { chart: NatalChart }) {
+  const [openBody, setOpenBody] = useState<string | null>(null);
+  const [readings, setReadings] = useState<Record<string, Reading>>({});
+
+  const handleToggle = async (planet: PlanetPosition) => {
+    if (openBody === planet.body) {
+      setOpenBody(null);
+      return;
+    }
+    setOpenBody(planet.body);
+
+    // Já tem leitura com texto, ou está em andamento → não refaz. Se a última
+    // tentativa deu ERRO (ex.: 503 transitório), reabrir tenta de novo.
+    const existing = readings[planet.body];
+    if (existing?.text || existing?.loading) return;
+
+    setReadings((prev) => ({ ...prev, [planet.body]: { loading: true } }));
+    const result = await fetchInterpretation({
+      body: planet.body,
+      sign: planet.sign,
+      house: planet.house,
+    });
+    setReadings((prev) => ({
+      ...prev,
+      [planet.body]: result.ok
+        ? { loading: false, text: result.value.text }
+        : { loading: false, error: result.error },
+    }));
+  };
+
   const angles = [
     { label: "Ascendente", pos: chart.angles.ascendant },
     { label: "Meio do Céu", pos: chart.angles.midheaven },
@@ -54,22 +168,17 @@ export function ChartPanel({ chart }: { chart: NatalChart }) {
     <div>
       <Section title="PLANETAS">
         {chart.planets.map((p) => (
-          <div key={p.body} style={cell}>
-            <span style={glyphStyle}>{glyphFor(p.body)}</span>
-            <span>{bodyLabel(p.body)}</span>
-            <span style={{ color: "var(--moon-silver)" }}>
-              {SIGN_GLYPH[p.sign]} {SIGN_PT[p.sign]}
-            </span>
-            {p.retrograde && (
-              <span style={{ color: "#b5476b", fontSize: 12 }} title="Retrógrado">
-                ℞
-              </span>
-            )}
-            <span style={degStyle}>
-              {p.formatted} · casa {p.house}
-            </span>
-          </div>
+          <PlanetRow
+            key={p.body}
+            planet={p}
+            open={openBody === p.body}
+            reading={readings[p.body]}
+            onToggle={() => handleToggle(p)}
+          />
         ))}
+        <p style={{ color: "var(--moon-silver)", fontSize: 12, marginTop: 8, opacity: 0.7 }}>
+          Clique em um planeta para a leitura por IA.
+        </p>
       </Section>
 
       <Section title="ÂNGULOS">

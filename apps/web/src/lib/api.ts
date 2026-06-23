@@ -1,17 +1,25 @@
-/** Cliente do frontend: fala com o route handler same-origin /api/chart. */
+/** Cliente do frontend: fala com os route handlers same-origin /api/*. */
 
-import type { BirthInput, NatalChart } from "@astra/types";
+import type {
+  BirthInput,
+  InterpretationRequest,
+  InterpretationResponse,
+  NatalChart,
+} from "@astra/types";
 import { type Result, ok, err } from "./result";
 
-export async function fetchChart(
-  input: BirthInput,
-): Promise<Result<NatalChart, string>> {
+/** POST genérico para um route handler same-origin, no padrão Result. */
+async function postJson<T>(
+  path: string,
+  body: unknown,
+  fallbackMsg: string,
+): Promise<Result<T, string>> {
   let res: Response;
   try {
-    res = await fetch("/api/chart", {
+    res = await fetch(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
+      body: JSON.stringify(body),
     });
   } catch (e) {
     return err(`Falha de rede: ${(e as Error).message}`);
@@ -21,8 +29,24 @@ export async function fetchChart(
     const detail = (await res.json().catch(() => null)) as
       | { message?: string }
       | null;
-    return err(detail?.message ?? `Erro ${res.status} ao calcular o mapa.`);
+    return err(detail?.message ?? `Erro ${res.status} — ${fallbackMsg}`);
   }
 
-  return ok((await res.json()) as NatalChart);
+  return ok((await res.json()) as T);
+}
+
+export function fetchChart(
+  input: BirthInput,
+): Promise<Result<NatalChart, string>> {
+  return postJson<NatalChart>("/api/chart", input, "ao calcular o mapa.");
+}
+
+export function fetchInterpretation(
+  req: InterpretationRequest,
+): Promise<Result<InterpretationResponse, string>> {
+  return postJson<InterpretationResponse>(
+    "/api/interpretation",
+    req,
+    "ao gerar a leitura.",
+  );
 }

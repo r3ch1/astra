@@ -50,3 +50,15 @@ test("POST /chart rejeita corpo inválido com 400", async () => {
   assert.equal(res.statusCode, 400);
   await app.close();
 });
+
+// Valida só o schema da rota de IA — não dispara o modelo (sem custo).
+test("POST /interpretation rejeita corpo inválido com 400", async () => {
+  const app = buildServer();
+  const res = await app.inject({
+    method: "POST",
+    url: "/interpretation",
+    payload: { body: "Sun", sign: "Nao_Existe", house: 99 },
+  });
+  assert.equal(res.statusCode, 400);
+  await app.close();
+});

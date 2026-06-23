@@ -25,6 +25,13 @@ packages/calculator/src/generated/
 .env.*
 !.env.example
 
+# Cache de interpretações (gerado em runtime)
+.cache/
+
+# Prompts de IA — fora do repo público (CLAUDE.md). Só os .example são versionados.
+apps/api/prompts/*.json
+!apps/api/prompts/*.example.json
+
 # Logs
 *.log
 npm-debug.log*

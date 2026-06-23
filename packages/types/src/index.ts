@@ -128,3 +128,41 @@ export interface NatalChart {
   angles: Angles;
   aspects: Aspect[];
 }
+
+// ── Leitura por IA ──────────────────────────────────────────────────────────
+// Contrato da interpretação gerada por IA para uma posição do mapa. É o que a
+// web envia ao endpoint POST /interpretation e o que recebe de volta. Os nomes
+// de corpo/signo são os canônicos em inglês emitidos pelo motor — a tradução
+// para português acontece dentro do prompt, no servidor.
+
+/** Aspecto que contextualiza a interpretação de uma posição (opcional). */
+export interface InterpretationAspect {
+  /** Tipo do aspecto, ex: "Square", "Trine". */
+  type: string;
+  /** Outro corpo envolvido, ex: "Saturn". */
+  with: string;
+  /** Faixa de orbe — define o bucket de cache. */
+  orb_bucket: OrbBucket;
+}
+
+/** Pedido de interpretação de uma posição (planeta em signo + casa). */
+export interface InterpretationRequest {
+  /** Corpo celeste (nome canônico em inglês), ex: "Sun". */
+  body: string;
+  sign: Sign;
+  /** Casa (1..12). */
+  house: number;
+  /** Aspecto opcional a interpretar junto. */
+  aspect?: InterpretationAspect;
+}
+
+/** Resposta de interpretação. */
+export interface InterpretationResponse {
+  text: string;
+  /** true = veio do cache; false = recém-gerada pelo modelo. */
+  cached: boolean;
+  /** Modelo que gerou (ou gerou originalmente) a interpretação. */
+  model: string;
+  /** Versão do prompt usada, para rastreabilidade. */
+  prompt_version: string;
+}
