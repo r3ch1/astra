@@ -11,6 +11,7 @@
 import { useState } from "react";
 import type { NatalChart, PlanetPosition } from "@astra/types";
 import { fetchInterpretation } from "../lib/api";
+import { Markdown } from "./Markdown";
 import {
   SIGN_GLYPH,
   SIGN_PT,
@@ -107,22 +108,19 @@ function PlanetRow({
       </button>
 
       {open && (
-        <div
-          style={{
-            padding: "10px 4px 14px",
-            fontSize: 13.5,
-            lineHeight: 1.6,
-            color: "var(--off-white)",
-            whiteSpace: "pre-wrap",
-          }}
-        >
+        <div style={{ padding: "10px 4px 14px" }}>
           {reading?.loading && (
-            <span style={{ color: "var(--moon-silver)" }}>Lendo o céu…</span>
+            <span style={{ color: "var(--moon-silver)", fontSize: 13.5 }}>Lendo o céu…</span>
           )}
           {reading?.error && (
-            <span style={{ color: "#e89ab0" }}>{reading.error}</span>
+            <span style={{ color: "#e89ab0", fontSize: 13.5 }}>{reading.error}</span>
           )}
-          {reading?.text}
+          {reading?.text && (
+            <Markdown
+              text={reading.text}
+              style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--off-white)" }}
+            />
+          )}
         </div>
       )}
     </div>

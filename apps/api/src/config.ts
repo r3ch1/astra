@@ -95,7 +95,7 @@ export const config: Config = {
       process.env.ASTRA_LLM_MODEL_READING ??
       defaultInterpretationModel[llmProvider] ??
       "claude-haiku-4-5",
-    readingMaxTokens: Number(process.env.ASTRA_LLM_READING_MAX_TOKENS ?? 2000),
+    readingMaxTokens: Number(process.env.ASTRA_LLM_READING_MAX_TOKENS ?? 4000),
     retry: {
       maxAttempts: Number(process.env.ASTRA_LLM_RETRY_ATTEMPTS ?? 3),
       baseDelayMs: Number(process.env.ASTRA_LLM_RETRY_BASE_MS ?? 500),

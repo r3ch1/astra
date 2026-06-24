@@ -13,6 +13,7 @@
 import { useState } from "react";
 import type { BirthInput } from "@astra/types";
 import { fetchReading } from "../lib/api";
+import { Markdown } from "./Markdown";
 
 interface State {
   loading: boolean;
@@ -99,17 +100,15 @@ export function FullReading({ input }: { input: BirthInput }) {
       )}
 
       {state.text && !state.loading && (
-        <div
+        <Markdown
+          text={state.text}
           style={{
             marginTop: 18,
             fontSize: 14.5,
             lineHeight: 1.7,
             color: "var(--off-white)",
-            whiteSpace: "pre-wrap",
           }}
-        >
-          {state.text}
-        </div>
+        />
       )}
     </section>
   );

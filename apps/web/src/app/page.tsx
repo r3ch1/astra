@@ -7,6 +7,7 @@ import { BirthForm } from "../components/BirthForm";
 import { NatalChartWheel } from "../components/NatalChartWheel";
 import { ChartPanel } from "../components/ChartPanel";
 import { FullReading } from "../components/FullReading";
+import { ShareButton } from "../components/ShareButton";
 
 const card: React.CSSProperties = {
   background: "var(--bg-card)",
@@ -77,22 +78,25 @@ export default function HomePage() {
               <div style={card}>
                 <ChartPanel chart={chart} />
               </div>
-              <button
-                onClick={() => {
-                  setChart(null);
-                  setError(null);
-                }}
-                style={{
-                  background: "transparent",
-                  color: "var(--moon-silver)",
-                  border: "1px solid var(--border-subtle)",
-                  borderRadius: 6,
-                  padding: "10px 16px",
-                  fontSize: 14,
-                }}
-              >
-                ← Novo mapa
-              </button>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <button
+                  onClick={() => {
+                    setChart(null);
+                    setError(null);
+                  }}
+                  style={{
+                    background: "transparent",
+                    color: "var(--moon-silver)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: 6,
+                    padding: "10px 16px",
+                    fontSize: 14,
+                  }}
+                >
+                  ← Novo mapa
+                </button>
+                <ShareButton input={chart.input} />
+              </div>
             </div>
           </>
         )}
