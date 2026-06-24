@@ -10,6 +10,7 @@ import type { LlmError, LlmProvider } from "./provider.js";
 import { createAnthropicProvider } from "./anthropic.js";
 import { createGeminiProvider } from "./gemini.js";
 import { createMockProvider } from "./mock.js";
+import { withRetry } from "./retry.js";
 
 let cached: LlmProvider | undefined;
 
@@ -28,7 +29,7 @@ export function getProvider(): Result<LlmProvider, LlmError> {
           message: "ANTHROPIC_API_KEY ausente — configure a key do Claude no .env",
         });
       }
-      cached = createAnthropicProvider(key);
+      cached = withRetry(createAnthropicProvider(key), config.llm.retry);
       return ok(cached);
     }
     case "gemini": {
@@ -39,7 +40,7 @@ export function getProvider(): Result<LlmProvider, LlmError> {
           message: "GEMINI_API_KEY ausente — configure a key do Google AI no .env",
         });
       }
-      cached = createGeminiProvider(key);
+      cached = withRetry(createGeminiProvider(key), config.llm.retry);
       return ok(cached);
     }
     default:

@@ -11,6 +11,10 @@ import type { CompletionRequest, LlmError, LlmProvider } from "./provider.js";
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
+// Status HTTP transitórios — vale repetir (rate limit, indisponibilidade,
+// timeouts de gateway). Os demais (400, 403, 404) são erros de requisição.
+const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
+
 // Forma mínima da resposta do generateContent (só o que consumimos).
 interface GeminiPart {
   text?: string;
@@ -56,6 +60,7 @@ export function createGeminiProvider(apiKey: string): LlmProvider {
         return err({
           kind: "request",
           message: `falha de rede ao chamar o Gemini: ${(e as Error).message}`,
+          retryable: true,
         });
       }
 
@@ -65,6 +70,7 @@ export function createGeminiProvider(apiKey: string): LlmProvider {
         return err({
           kind: "request",
           message: `Gemini ${res.status}: ${data?.error?.message ?? "erro desconhecido"}`,
+          retryable: RETRYABLE_STATUS.has(res.status),
         });
       }
 

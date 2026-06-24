@@ -9,6 +9,19 @@ import Anthropic from "@anthropic-ai/sdk";
 import { type Result, ok, err } from "../result.js";
 import type { CompletionRequest, LlmError, LlmProvider } from "./provider.js";
 
+// Status HTTP transitórios da API do Claude — vale repetir (429 rate limit,
+// 529 overloaded, 5xx). Os demais (400, 401, 403, 404) são erros definitivos.
+const RETRYABLE_STATUS = new Set([408, 409, 429, 500, 502, 503, 504, 529]);
+
+/** Erro transitório: queda de conexão ou status HTTP repetível. */
+function isRetryable(e: unknown): boolean {
+  if (e instanceof Anthropic.APIConnectionError) return true;
+  if (e instanceof Anthropic.APIError && typeof e.status === "number") {
+    return RETRYABLE_STATUS.has(e.status);
+  }
+  return false;
+}
+
 export function createAnthropicProvider(apiKey: string): LlmProvider {
   const client = new Anthropic({ apiKey });
 
@@ -45,6 +58,7 @@ export function createAnthropicProvider(apiKey: string): LlmProvider {
         return err({
           kind: "request",
           message: `falha ao chamar o Claude: ${(e as Error).message}`,
+          retryable: isRetryable(e),
         });
       }
     },

@@ -15,6 +15,11 @@ export type LlmErrorKind = "config" | "request" | "refusal";
 export interface LlmError {
   kind: LlmErrorKind;
   message: string;
+  /**
+   * Erro transitório (429/503, queda de rede) que vale repetir. O provider
+   * marca; a política de retry (`withRetry`) decide. Ausente = não repetir.
+   */
+  retryable?: boolean;
 }
 
 /** Requisição de completude — neutra entre provedores. */

@@ -29,6 +29,15 @@ export interface LlmConfig {
   modelInterpretation: string;
   /** Teto de tokens por interpretação. */
   maxTokens: number;
+  /** Política de retry para erros transitórios do provider (429/503/rede). */
+  retry: {
+    /** Tentativas totais, incluindo a primeira (1 = sem retry). */
+    maxAttempts: number;
+    /** Atraso base do backoff exponencial, em ms. */
+    baseDelayMs: number;
+    /** Teto do atraso entre tentativas, em ms. */
+    maxDelayMs: number;
+  };
 }
 
 const llmProvider = process.env.LLM_PROVIDER ?? "anthropic";
@@ -76,5 +85,10 @@ export const config: Config = {
       defaultInterpretationModel[llmProvider] ??
       "claude-haiku-4-5",
     maxTokens: Number(process.env.ASTRA_LLM_MAX_TOKENS ?? 1000),
+    retry: {
+      maxAttempts: Number(process.env.ASTRA_LLM_RETRY_ATTEMPTS ?? 3),
+      baseDelayMs: Number(process.env.ASTRA_LLM_RETRY_BASE_MS ?? 500),
+      maxDelayMs: Number(process.env.ASTRA_LLM_RETRY_MAX_MS ?? 8_000),
+    },
   },
 };
