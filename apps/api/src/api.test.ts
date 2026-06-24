@@ -62,3 +62,15 @@ test("POST /interpretation rejeita corpo inválido com 400", async () => {
   assert.equal(res.statusCode, 400);
   await app.close();
 });
+
+// Idem para a Leitura Completa: valida o schema (BirthInput), sem chamar a IA.
+test("POST /reading rejeita corpo inválido com 400", async () => {
+  const app = buildServer();
+  const res = await app.inject({
+    method: "POST",
+    url: "/reading",
+    payload: { year: 1987 },
+  });
+  assert.equal(res.statusCode, 400);
+  await app.close();
+});

@@ -5,6 +5,7 @@ import type {
   InterpretationRequest,
   InterpretationResponse,
   NatalChart,
+  ReadingResponse,
 } from "@astra/types";
 import { type Result, ok, err } from "./result";
 
@@ -48,5 +49,16 @@ export function fetchInterpretation(
     "/api/interpretation",
     req,
     "ao gerar a leitura.",
+  );
+}
+
+/** Leitura Completa: envia o BirthInput; a API recalcula o mapa e sintetiza. */
+export function fetchReading(
+  input: BirthInput,
+): Promise<Result<ReadingResponse, string>> {
+  return postJson<ReadingResponse>(
+    "/api/reading",
+    input,
+    "ao gerar a leitura completa.",
   );
 }

@@ -14,7 +14,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { InterpretationRequest } from "@astra/types";
+import type { InterpretationRequest, NatalChart } from "@astra/types";
 import { config } from "../config.js";
 
 const SIGN_PT: Record<string, string> = {
@@ -64,6 +64,8 @@ interface PromptPack {
   system: string;
   interpretation_user: string;
   interpretation_aspect_line: string;
+  reading_system: string;
+  reading_user: string;
 }
 
 let pack: PromptPack | undefined;
@@ -105,4 +107,41 @@ export function buildInterpretationPrompt(req: InterpretationRequest): string {
     .replace("{sign}", signPt(req.sign))
     .replace("{house}", String(req.house))
     .replace("{aspectLine}", aspectLine);
+}
+
+/** Instrução de sistema para a leitura completa (síntese do mapa). */
+export function readingSystem(): string {
+  return load().reading_system;
+}
+
+/**
+ * Distila o mapa num resumo textual em PT (planetas, ângulos, aspectos) e o
+ * injeta no template de síntese. Mandar o resumo — e não o JSON cru — mantém o
+ * prompt focado e legível para o modelo.
+ */
+export function buildReadingPrompt(chart: NatalChart): string {
+  const p = load();
+
+  const planets = chart.planets
+    .map(
+      (pl) =>
+        `- ${bodyPt(pl.body)} em ${signPt(pl.sign)}, Casa ${pl.house}${pl.retrograde ? " (retrógrado)" : ""}`,
+    )
+    .join("\n");
+
+  const angles = [
+    `- Ascendente em ${signPt(chart.angles.ascendant.sign)}`,
+    `- Meio do Céu em ${signPt(chart.angles.midheaven.sign)}`,
+  ].join("\n");
+
+  const aspects = chart.aspects.length
+    ? chart.aspects
+        .map((a) => `- ${bodyPt(a.from)} ${aspectPt(a.aspect)} ${bodyPt(a.to)} (orbe ${a.orb_bucket})`)
+        .join("\n")
+    : "- (nenhum aspecto maior)";
+
+  const summary = `PLANETAS:\n${planets}\n\nÂNGULOS:\n${angles}\n\nASPECTOS:\n${aspects}`;
+  const name = chart.input.name?.trim();
+
+  return p.reading_user.replace("{name}", name || "esta pessoa").replace("{chart}", summary);
 }

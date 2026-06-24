@@ -56,3 +56,21 @@ button:disabled {
   cursor: progress;
   opacity: 0.6;
 }
+
+/* Skeleton da Leitura Completa enquanto a síntese é gerada. */
+@keyframes astra-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.astra-skeleton {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--border-subtle);
+  animation: astra-pulse 1.4s ease-in-out infinite;
+}

@@ -166,3 +166,18 @@ export interface InterpretationResponse {
   /** Versão do prompt usada, para rastreabilidade. */
   prompt_version: string;
 }
+
+// ── Leitura Completa (síntese do mapa) ──────────────────────────────────────
+// Síntese narrativa do mapa inteiro, conectando os temas centrais — diferente
+// da interpretação por posição. O pedido é o próprio {@link BirthInput}: a API
+// recalcula o mapa e sintetiza, garantindo consistência com o que está na tela.
+// NÃO é cacheada: é única por pessoa (ver skill `cache-llm`).
+
+/** Resposta da leitura completa. Sem `cached` — a síntese nunca é cacheada. */
+export interface ReadingResponse {
+  text: string;
+  /** Modelo que gerou a síntese. */
+  model: string;
+  /** Versão do prompt usada, para rastreabilidade. */
+  prompt_version: string;
+}

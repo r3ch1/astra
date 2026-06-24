@@ -29,6 +29,10 @@ export interface LlmConfig {
   modelInterpretation: string;
   /** Teto de tokens por interpretação. */
   maxTokens: number;
+  /** Modelo para a leitura completa (síntese do mapa). Pode ser mais forte. */
+  modelReading: string;
+  /** Teto de tokens da síntese — maior que o da posição (texto mais longo). */
+  readingMaxTokens: number;
   /** Política de retry para erros transitórios do provider (429/503/rede). */
   retry: {
     /** Tentativas totais, incluindo a primeira (1 = sem retry). */
@@ -85,6 +89,13 @@ export const config: Config = {
       defaultInterpretationModel[llmProvider] ??
       "claude-haiku-4-5",
     maxTokens: Number(process.env.ASTRA_LLM_MAX_TOKENS ?? 1000),
+    // Síntese reaproveita o default do provider; sobrescreva p/ um modelo mais
+    // forte (ex.: gemini-2.5-pro / claude-sonnet) sem afetar o cache de posição.
+    modelReading:
+      process.env.ASTRA_LLM_MODEL_READING ??
+      defaultInterpretationModel[llmProvider] ??
+      "claude-haiku-4-5",
+    readingMaxTokens: Number(process.env.ASTRA_LLM_READING_MAX_TOKENS ?? 2000),
     retry: {
       maxAttempts: Number(process.env.ASTRA_LLM_RETRY_ATTEMPTS ?? 3),
       baseDelayMs: Number(process.env.ASTRA_LLM_RETRY_BASE_MS ?? 500),

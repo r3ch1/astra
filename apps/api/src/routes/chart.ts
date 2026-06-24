@@ -9,7 +9,7 @@ import type { FastifyPluginAsync } from "fastify";
 import type { BirthInput } from "@astra/types";
 import { computeChart, type CalcErrorKind } from "../calculator.js";
 
-const birthInputSchema = {
+export const birthInputSchema = {
   type: "object",
   required: ["year", "month", "day", "hour", "minute", "timezone", "latitude", "longitude"],
   additionalProperties: false,

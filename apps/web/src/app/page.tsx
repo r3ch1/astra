@@ -6,6 +6,7 @@ import { fetchChart } from "../lib/api";
 import { BirthForm } from "../components/BirthForm";
 import { NatalChartWheel } from "../components/NatalChartWheel";
 import { ChartPanel } from "../components/ChartPanel";
+import { FullReading } from "../components/FullReading";
 
 const card: React.CSSProperties = {
   background: "var(--bg-card)",
@@ -96,6 +97,13 @@ export default function HomePage() {
           </>
         )}
       </div>
+
+      {chart && (
+        <div style={{ marginTop: 24 }}>
+          {/* key por mapa: trocar de mapa remonta e zera a leitura anterior. */}
+          <FullReading key={chart.julian_day_ut} input={chart.input} />
+        </div>
+      )}
     </main>
   );
 }
